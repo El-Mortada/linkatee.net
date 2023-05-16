@@ -1,0 +1,269 @@
+/** @format */
+
+.navContainer {
+  position: fixed;
+  z-index: 999;
+}
+
+.navBar {
+  height: 75px;
+  width: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgb(235, 238, 241);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.navBar.show {
+  opacity: 1;
+}
+.navBar.hide {
+  opacity: 0;
+}
+@media screen and (max-width: 600px) {
+  .navBar {
+    width: 100%;
+  }
+}
+
+.buttonInvisible {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: white;
+}
+.miniPic {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 5px;
+}
+.miniPic img {
+  transform: translateY(5px);
+}
+.profileContainer {
+  height: 100vh;
+  background-color: #f1f1f1;
+  background-image: url(../../Assets/Images/Background.png);
+  background-size: cover;
+  background-position: center center;
+  overflow: auto;
+}
+
+.link {
+  text-decoration: none;
+  position: fixed;
+  top: 20px;
+  left: 10px;
+  z-index: 999;
+}
+
+.settingsTab {
+  height: 35px;
+  width: 35px;
+  position: fixed;
+  left: 0;
+  top: 50%;
+  border-radius: 0 15px 15px 0;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.profileContent {
+  min-width: 375px;
+  min-height: 100vh;
+  box-sizing: unset;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.profilePic {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+.socialIcons svg {
+  margin-bottom: 10px;
+  fill: gray;
+  width: 32px;
+  height: 32px;
+  margin-left: 15px;
+  cursor: pointer;
+}
+.socialIcons .facebook {
+  fill: #083170;
+}
+.socialIcons .youtube {
+  fill: #083170;
+}
+.socialIcons .twitter {
+  fill: #083170;
+}
+.socialIcons .tiktok {
+  fill: #083170;
+}
+.socialIcons .instagram {
+  fill: #083170;
+}
+.socialIcons .e-mail {
+  fill: #083170;
+}
+
+.profile-update {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 1);
+  height: 600px;
+  width: 600px;
+  top: 25%;
+  right: 5%;
+  overflow: auto;
+}
+.outerCircle {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  bottom: 5px;
+  right: 5px;
+}
+.innerCircle {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.fa-camera {
+  color: white;
+}
+
+.styledContainer {
+  overflow: hidden;
+
+  border: none;
+  color: rgb(255, 255, 255);
+
+  border-radius: 4px;
+  width: 42vw;
+  max-width: 1200px;
+  min-width: 350px;
+  margin-top: 32px;
+}
+@-webkit-keyframes hvrPop {
+  50% {
+    -webkit-transform: scale(1.2);
+    transform: scale(1.02);
+  }
+}
+@keyframes hvrPop {
+  50% {
+    -webkit-transform: scale(1.2);
+    transform: scale(1.02);
+  }
+}
+.hvrPop {
+  display: flex;
+  vertical-align: middle;
+  justify-content: center;
+  -webkit-transform: perspective(1px) translateZ(0);
+  transform: perspective(1px) translateZ(0);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+}
+.hvrPop:hover,
+.hvrPop:focus,
+.hvrPop:active {
+  -webkit-animation-name: hvrPop;
+  animation-name: hvrPop;
+  -webkit-animation-duration: 0.3s;
+  animation-duration: 0.3s;
+  -webkit-animation-timing-function: linear;
+  animation-timing-function: linear;
+  -webkit-animation-iteration-count: 1;
+  animation-iteration-count: 1;
+}
+
+.hvrPop:hover .profileLink button {
+  opacity: 100%;
+}
+
+.pic-container {
+  overflow: hidden;
+  pointer-events: none;
+  border-radius: 4px;
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+}
+.pic-container img {
+  border-radius: 0px;
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  object-position: initial;
+  width: 100%;
+}
+
+.profileLink {
+  margin: 0px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 5px 5px;
+  width: 95%;
+  box-sizing: border-box;
+  background-color: rgba(255, 255, 255, 1);
+  margin-bottom: 16px;
+  box-shadow: 3px 2px 3px lightgray;
+}
+.profileLink button {
+  right: 8px;
+  opacity: 0;
+  display: flex;
+  color: black;
+  border: none;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  z-index: 99999;
+  transition: all 0.15s ease-in;
+}
+.profileText {
+  padding: 0px;
+  margin: 0px;
+  line-height: 1.5;
+  font-weight: 500;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.85);
+}
+.verified img {
+  transform: translateY(50%);
+  margin-left: 5px;
+}
+.formUpdate {
+  position: absolute;
+  min-width: 380px;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.61);
+  z-index: 999999999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.innerForm {
+  background-color: white;
+  overflow: auto;
+  width: 90%;
+  min-height: 75%;
+  max-height: 650px;
+  padding-bottom: 30px;
+  border-radius: 25px 25px 25px 25px;
+}
+.buttonInvisible svg {
+  fill: white;
+}
