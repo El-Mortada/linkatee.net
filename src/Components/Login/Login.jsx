@@ -43,12 +43,14 @@ export default function Login() {
     <>
       <div className={`w-100 h-100  ${styles.formBody}`}>
         <div>
-          <div className="row">
-            <div className={styles.formHolder}>
-              <div className={styles.formContent}>
+          <div className="row g-0 ">
+            <div
+              className={`${styles.formHolder} col-md-6 text-center position-relative`}
+            >
+              <div className={`${styles.formContent} `}>
                 <div className={styles.formItems}>
                   <img src={image} alt="" />
-                  <p>Fill in the data below.</p>
+                  <p className="ms-2">Fill in the data below.</p>
                   <form
                     onSubmit={registerUser}
                     className={`formData ${styles.formData}`}
@@ -104,20 +106,23 @@ export default function Login() {
                       </button>
                     </div>
                   </form>
-                  <div className="already mt-3">
+                  <div className={`${styles.already} mt-3`}>
                     <span className="me-1">Dont have account?</span>
                     <Link to="/reg">Register now</Link>
                   </div>
                 </div>
               </div>
+              <div className="ocean position-absolute">
+                <div className="wave"></div>
+                <div className="wave"></div>
+                <div className="wave"></div>
+              </div>
+            </div>
+            <div className={`${styles.socialBackground} col-md-6`}>
+              <div className={`${styles.dimmer}`}></div>
             </div>
           </div>
         </div>
-      </div>
-      <div className="ocean">
-        <div className="wave"></div>
-        <div className="wave"></div>
-        <div className="wave"></div>
       </div>
     </>
   );

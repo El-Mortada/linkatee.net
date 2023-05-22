@@ -5,9 +5,10 @@ import styles from "../Dashboard/Dashboard.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { LinksContext } from "../../Context/LinksContext";
 import image from "../../Assets/Images/Linkatee Final-01.png";
+import { BackgroundContext } from "../../Context/BackgroundContext";
 
 export default function Dashboard() {
-  const { linksContainer, showLink, setLinksContainer } =
+  const { linksContainer, showLink, setLinksContainer, user } =
     useContext(LinksContext);
   let navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
@@ -17,6 +18,7 @@ export default function Dashboard() {
   const token = localStorage.getItem("token");
   const [title, setTitle] = useState();
   const [linkAd, setLinkAd] = useState();
+  const { background, uploadBackgroundImage } = useContext(BackgroundContext);
 
   async function addLink(e) {
     e.preventDefault();
@@ -79,6 +81,7 @@ export default function Dashboard() {
   useEffect(() => {
     const timer = setTimeout(() => {
       showLink(setLinksContainer, token);
+      uploadBackgroundImage(token);
     }, 400);
     return () => clearTimeout(timer);
   }, []);
@@ -333,33 +336,15 @@ export default function Dashboard() {
                       <span>Links</span>
                     </span>
                   </div>
-                  <Link className={styles.links} to="/soon">
+                  <Link className={styles.links} to={`/${user.username}`}>
                     <div
                       className={`${styles.block} d-flex align-items-center`}
                     >
                       <span className="p-2 ">
                         <span className="pe-2">
-                          <svg
-                            className="mb-1 ''"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 16 16"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            role="img"
-                            aria-hidden="false"
-                            aria-labelledby="ltclid1_title "
-                          >
-                            <title id="ltclid1_title">Appearance</title>
-                            <path
-                              fillRule="evenodd"
-                              clipRule="evenodd"
-                              d="M6.008 1a5.009 5.009 0 1 0 0 10.018v1A6.009 6.009 0 1 1 6.008 0v1Zm5.01 5.009A5.009 5.009 0 0 0 6.008 1V0a6.009 6.009 0 0 1 6.01 6.009h-1Zm-4.01.5-.5.5V15.5l.5.5H15.5l.5-.5V7.008l-.5-.5H7.007Zm.5 8.492V7.508H15v7.493H7.507Z"
-                              fill="currentColor"
-                            ></path>
-                          </svg>
+                          <i className="fa-regular fa-user"></i>
                         </span>
-                        <span>Appearance</span>
+                        <span>Profile page</span>
                       </span>
                     </div>
                   </Link>
@@ -401,9 +386,27 @@ export default function Dashboard() {
                       <span>
                         <span className="p-2 ">
                           <span className="pe-2">
-                            <i className="fa-regular fa-user"></i>
+                            <svg
+                              className="mb-1 ''"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 16 16"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              role="img"
+                              aria-hidden="false"
+                              aria-labelledby="ltclid1_title "
+                            >
+                              <title id="ltclid1_title">Profile page</title>
+                              <path
+                                fillRule="evenodd"
+                                clipRule="evenodd"
+                                d="M6.008 1a5.009 5.009 0 1 0 0 10.018v1A6.009 6.009 0 1 1 6.008 0v1Zm5.01 5.009A5.009 5.009 0 0 0 6.008 1V0a6.009 6.009 0 0 1 6.01 6.009h-1Zm-4.01.5-.5.5V15.5l.5.5H15.5l.5-.5V7.008l-.5-.5H7.007Zm.5 8.492V7.508H15v7.493H7.507Z"
+                                fill="currentColor"
+                              ></path>
+                            </svg>
                           </span>
-                          <span>Profile Page</span>
+                          <span>Edit profile</span>
                         </span>
                       </span>
                     </div>
@@ -633,7 +636,9 @@ export default function Dashboard() {
                         >
                           <div className="col-md-8 ps-5 py-3">
                             <p className="fw-bold m-0">{link.link.title}</p>
-                            <p className="my-0">{link.link.link}</p>
+                            <p className={`my-0 ${styles.textOverFlow}`}>
+                              {link.link.link}
+                            </p>
                             <div
                               className={`${styles.attachments} d-flex align-items-baseline mt-2`}
                             >
@@ -867,6 +872,7 @@ export default function Dashboard() {
                     <div className={styles.positionContainer}>
                       <div
                         className={`${styles.previewPhone} d-flex justify-content-center`}
+                        style={{ backgroundImage: `url(${background})` }}
                       >
                         <div
                           className={`${styles.profilePic} pt-4 rounded-circle d-flex flex-column align-items-center`}
@@ -877,9 +883,11 @@ export default function Dashboard() {
                             A
                           </div>
                           <div className={`${styles.userDesc} fw-bold mt-1`}>
-                            <span className="fw-bolder">@</span>Username
+                            <span className="fw-bolder">@</span>
+                            {user.username}
                           </div>
                         </div>
+
                         <div
                           className={`${styles.appleShare} rounded-circle d-flex justify-content-center align-items-center`}
                         >

@@ -21,6 +21,12 @@
   z-index: 999999;
 }
 
+.textOverFlow {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 300px;
+  white-space: nowrap;
+}
 .userLinkInfoContainer {
   background-color: #f3f3f1;
 }
@@ -290,6 +296,8 @@ span + span {
   border-radius: 30px 30px 30px 30px;
   padding: 10px;
   background-image: radial-gradient(#bbbbbb 65%, #e7e7e7);
+  background-position: center center;
+  background-size: cover;
   position: relative;
 }
 

@@ -16,7 +16,7 @@ import Dashboard from "./Components/Dashboard/Dashboard";
 import ProtectedRoute from "./Components/ProtectedRoute/ProtectedRoute";
 
 function App() {
-  const routers = createHashRouter([
+  const routers = createBrowserRouter([
     {
       path: "/",
       element: <LayOut />,
@@ -53,6 +53,10 @@ function App() {
               <ProfilePage />
             </ProtectedRoute>
           ),
+        },
+        {
+          path: ":username",
+          element: <ProfilePage />,
         },
         {
           path: "settings",

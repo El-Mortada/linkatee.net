@@ -258,10 +258,12 @@
 .innerForm {
   background-color: white;
   overflow: auto;
-  width: 90%;
+  width: 35%;
+  min-width: 300px;
   min-height: 75%;
   max-height: 650px;
   padding-bottom: 30px;
+  scroll-behavior: smooth;
   border-radius: 25px 25px 25px 25px;
 }
 .buttonInvisible svg {

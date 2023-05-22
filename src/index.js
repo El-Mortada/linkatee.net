@@ -8,12 +8,15 @@ import reportWebVitals from "./reportWebVitals";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import LinksContextProvider from "./Context/LinksContext";
+import BackgroundContextProvider from "./Context/BackgroundContext";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <LinksContextProvider>
-      <App />
-    </LinksContextProvider>
+    <BackgroundContextProvider>
+      <LinksContextProvider>
+        <App />
+      </LinksContextProvider>
+    </BackgroundContextProvider>
   </React.StrictMode>
 );
 
