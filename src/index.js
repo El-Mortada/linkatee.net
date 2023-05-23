@@ -9,13 +9,16 @@ import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import LinksContextProvider from "./Context/LinksContext";
 import BackgroundContextProvider from "./Context/BackgroundContext";
+import ImageContextProvider from "./Context/ImageContext";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <BackgroundContextProvider>
-      <LinksContextProvider>
-        <App />
-      </LinksContextProvider>
+      <ImageContextProvider>
+        <LinksContextProvider>
+          <App />
+        </LinksContextProvider>
+      </ImageContextProvider>
     </BackgroundContextProvider>
   </React.StrictMode>
 );

@@ -6,6 +6,7 @@ import { LinksContext } from "../../Context/LinksContext";
 import image from "../../Assets/Images/Linkatee Final-02.png";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { BackgroundContext } from "../../Context/BackgroundContext";
+import { ImageContext } from "../../Context/ImageContext";
 
 export default function ProfilePage() {
   const { linksContainer, user } = useContext(LinksContext);
@@ -15,13 +16,19 @@ export default function ProfilePage() {
     uploadBackgroundImage,
     setBackground,
   } = useContext(BackgroundContext);
+
+  const {
+    getPic,
+    updateProfileImage,
+    uploadProfileImage,
+    profileImg,
+    setProfileImg,
+  } = useContext(ImageContext);
   const [newUser, setNewUser] = useState({});
   const [links, setLinks] = useState([]);
   const [openEdit, setOpenEdit] = useState(true);
   const [show, setShow] = useState(false);
   const [token, setToken] = useState("");
-  const [profileImg, setProfileImg] = useState();
-  // const [background, setBackground] = useState();
   const params = useParams();
   const [settings, setSettings] = useState(true);
   let navigate = useNavigate();
@@ -54,23 +61,7 @@ export default function ProfilePage() {
     if (localStorage.getItem("token") != null) {
       const newToken = localStorage.getItem("token");
       setToken(newToken);
-      async function getPic() {
-        let response = await fetch(
-          `https://backend.linkatee.com/api/show-avatar`,
-          {
-            headers: {
-              Accept: "application/json",
-              Authorization: "Bearer" + newToken,
-            },
-            method: "get",
-            redirect: "follow",
-          }
-        );
-        const responseData = await response.json();
-        console.log(responseData.avatar_url);
-        setProfileImg(responseData.avatar_url);
-      }
-      getPic();
+      getPic(newToken, setProfileImg);
       uploadBackgroundImage(newToken);
     }
     setLinks(linksContainer);
@@ -101,40 +92,6 @@ export default function ProfilePage() {
     const responseData = await response.json();
     console.log(responseData);
     setNewUser(responseData.user);
-  };
-
-  const updateProfileImage = async (event, token) => {
-    event.preventDefault();
-    const formData = new FormData(document.querySelector(".picForm"));
-    let response = await fetch(
-      `https://backend.linkatee.com/api/store-avatar`,
-      {
-        headers: {
-          Accept: "application/json",
-          Authorization: "Bearer" + token,
-        },
-        method: "post",
-        body: formData,
-        redirect: "follow",
-      }
-    );
-    const responseData = await response.json();
-    console.log(responseData);
-  };
-
-  const uploadProfileImage = async (event, token) => {
-    event.preventDefault();
-    let response = await fetch(`https://backend.linkatee.com/api/show-avatar`, {
-      headers: {
-        Accept: "application/json",
-        Authorization: "Bearer" + token,
-      },
-      method: "get",
-      redirect: "follow",
-    });
-    const responseData = await response.json();
-    console.log(responseData.avatar_url);
-    setProfileImg(responseData.avatar_url);
   };
 
   return (
@@ -202,12 +159,14 @@ export default function ProfilePage() {
                       }}
                       id="picInput"
                       type="file"
+                      accept="image/png, image/jpg"
                       className="form-control my-2 "
                       name="avatar"
                     />
                     <label htmlFor="background">Background: </label>
                     <input
                       type="file"
+                      accept="image/png, image/jpg"
                       className="form-control my-2"
                       name="background"
                     />

@@ -344,6 +344,99 @@ span + span {
 .alertRing:hover {
   background-color: #d6d8ce;
 }
+
+@-webkit-keyframes hvrPop {
+  50% {
+    -webkit-transform: scale(1.2);
+    transform: scale(1.02);
+  }
+}
+@keyframes hvrPop {
+  50% {
+    -webkit-transform: scale(1.2);
+    transform: scale(1.02);
+  }
+}
+.hvrPop {
+  display: flex;
+  vertical-align: middle;
+  justify-content: center;
+  -webkit-transform: perspective(1px) translateZ(0);
+  transform: perspective(1px) translateZ(0);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+}
+.hvrPop:hover,
+.hvrPop:focus,
+.hvrPop:active {
+  -webkit-animation-name: hvrPop;
+  animation-name: hvrPop;
+  -webkit-animation-duration: 0.3s;
+  animation-duration: 0.3s;
+  -webkit-animation-timing-function: linear;
+  animation-timing-function: linear;
+  -webkit-animation-iteration-count: 1;
+  animation-iteration-count: 1;
+}
+
+.hvrPop:hover .profileLink button {
+  opacity: 100%;
+}
+
+.hvrPop:hover .profileLink button {
+  opacity: 100%;
+}
+
+.profileLink {
+  margin: 0px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 0px 5px;
+  width: 190px;
+  box-sizing: border-box;
+  background-color: rgba(255, 255, 255, 1);
+  margin-bottom: 16px;
+  box-shadow: 3px 2px 3px lightgray;
+}
+.profileLink button {
+  right: 4px;
+  opacity: 0;
+  display: flex;
+  color: black;
+  border: none;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  z-index: 99999;
+  transition: all 0.15s ease-in;
+}
+
+.profileText {
+  padding: 0px;
+  margin: 0px;
+  line-height: 1.5;
+  font-weight: 500;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.linksContainer i {
+  font-size: 12px;
+}
+
+/* .logoContainer {
+  width: 30%;
+} */
+
+.profilePic {
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-bottom: 50px;
+}
+
 @media screen and (max-width: 760px) {
   .navLeftSide {
     display: none;

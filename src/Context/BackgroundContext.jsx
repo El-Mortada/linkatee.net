@@ -44,7 +44,7 @@ export default function BackgroundContextProvider(props) {
       }
     );
     const responseData = await response.json();
-    console.log(responseData.background_url);
+    console.log(responseData);
     setBackground(responseData.background_url);
     setProfileImg(responseData.avatar_url);
   };

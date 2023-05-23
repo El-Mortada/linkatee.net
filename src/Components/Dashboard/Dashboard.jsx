@@ -6,6 +6,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { LinksContext } from "../../Context/LinksContext";
 import image from "../../Assets/Images/Linkatee Final-01.png";
 import { BackgroundContext } from "../../Context/BackgroundContext";
+import { ImageContext } from "../../Context/ImageContext";
+import logo from "../../Assets/Images/Linkatee Final-02.png";
 
 export default function Dashboard() {
   const { linksContainer, showLink, setLinksContainer, user } =
@@ -19,6 +21,7 @@ export default function Dashboard() {
   const [title, setTitle] = useState();
   const [linkAd, setLinkAd] = useState();
   const { background, uploadBackgroundImage } = useContext(BackgroundContext);
+  const { profileImg, getPic, setProfileImg } = useContext(ImageContext);
 
   async function addLink(e) {
     e.preventDefault();
@@ -82,6 +85,7 @@ export default function Dashboard() {
     const timer = setTimeout(() => {
       showLink(setLinksContainer, token);
       uploadBackgroundImage(token);
+      getPic(token, setProfileImg);
     }, 400);
     return () => clearTimeout(timer);
   }, []);
@@ -94,7 +98,10 @@ export default function Dashboard() {
             <div
               className={`${styles.navDropMenu} shadow-sm rounded-3 d-flex flex-column justify-content-center align-items-center`}
             >
-              <Link className={`mb-2 mt-2 p-0 ${styles.links}`} to="/profile">
+              <Link
+                className={`mb-2 mt-2 p-0 ${styles.links}`}
+                to={`/${user.username}`}
+              >
                 <div className={`${styles.block} d-flex align-items-center`}>
                   <span>
                     <span className="p-2 ">
@@ -106,7 +113,7 @@ export default function Dashboard() {
                   </span>
                 </div>
               </Link>
-              <Link className={styles.links} to="/soon">
+              <Link className={styles.links} to="/profile">
                 <div className={`${styles.block} d-flex align-items-center`}>
                   <span className="p-2 ">
                     <span className="pe-2">
@@ -121,7 +128,7 @@ export default function Dashboard() {
                         aria-hidden="false"
                         aria-labelledby="ltclid1_title "
                       >
-                        <title id="ltclid1_title">Appearance</title>
+                        <title id="ltclid1_title">Edit profile</title>
                         <path
                           fillRule="evenodd"
                           clipRule="evenodd"
@@ -875,16 +882,91 @@ export default function Dashboard() {
                         style={{ backgroundImage: `url(${background})` }}
                       >
                         <div
-                          className={`${styles.profilePic} pt-4 rounded-circle d-flex flex-column align-items-center`}
+                          className={`${styles.profilePic} pt-4 d-flex flex-column align-items-center position-relative`}
                         >
                           <div
                             className={`${styles.circle} rounded-circle d-flex justify-content-center align-items-center`}
                           >
-                            A
+                            <img
+                              className="w-100 h-100 rounded-circle"
+                              src={profileImg}
+                              alt=""
+                            />
                           </div>
-                          <div className={`${styles.userDesc} fw-bold mt-1`}>
+                          <div
+                            className={`${styles.userDesc} fw-bold mt-1 mb-2`}
+                          >
                             <span className="fw-bolder">@</span>
                             {user.username}
+                          </div>
+                          <div className={`${styles.linksContainer}`}>
+                            {linksContainer.map((link, index) => (
+                              <div key={index} className={styles.hvrPop}>
+                                <a
+                                  className={`${styles.profileLink} rounded-pill d-flex justify-content-between align-items-center`}
+                                  href={link.link.link}
+                                  style={{
+                                    backgroundColor: `${
+                                      link.link.background_color
+                                        ? link.link.background_color
+                                        : ""
+                                    }`,
+                                    color: `${
+                                      link.link.text_color
+                                        ? link.link.text_color
+                                        : ""
+                                    }`,
+                                  }}
+                                >
+                                  <div
+                                    className={`${styles.picContainer} d-flex justify-content-center align-items-center`}
+                                  >
+                                    <i className="fa-solid fa-store"></i>
+                                  </div>
+                                  <p
+                                    style={{
+                                      color: `${
+                                        link.link.text_color
+                                          ? link.link.text_color
+                                          : ""
+                                      }`,
+                                    }}
+                                    className={styles.profileText}
+                                  >
+                                    {link.link.title}
+                                  </p>
+                                  <button>
+                                    <svg
+                                      width="10"
+                                      height="10"
+                                      viewBox="0 0 16 16"
+                                      fill="none"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      className=" "
+                                      role="img"
+                                      aria-hidden="false"
+                                      aria-labelledby="ltclid1132253_title "
+                                    >
+                                      <title id="ltclid1132253_title">
+                                        Apple Share
+                                      </title>
+                                      <path
+                                        fillRule="evenodd"
+                                        clipRule="evenodd"
+                                        d="M10.6464 3.85353L11 4.20708L11.7071 3.49998L11.3536 3.14642L8.35355 0.146423H7.64645L4.64645 3.14642L4.29289 3.49998L5 4.20708L5.35355 3.85353L7.5 1.70708V9.49998V9.99998H8.5V9.49998V1.70708L10.6464 3.85353ZM1 5.5L1.5 5H4V6H2V15H14V6H12V5H14.5L15 5.5V15.5L14.5 16H1.5L1 15.5V5.5Z"
+                                        fill="currentColor"
+                                      ></path>
+                                    </svg>
+                                  </button>
+                                </a>
+                              </div>
+                            ))}
+
+                            <div
+                              className={`${styles.logoContainer} d-flex justify-content-center align-items-center position-absolute mt-5`}
+                            >
+                              <img className="w-50" src={logo} alt="" />
+                            </div>
                           </div>
                         </div>
 
