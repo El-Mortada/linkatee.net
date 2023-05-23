@@ -9,8 +9,12 @@ import { BackgroundContext } from "../../Context/BackgroundContext";
 
 export default function ProfilePage() {
   const { linksContainer, user } = useContext(LinksContext);
-  const { uploadProfileBackground, background, uploadBackgroundImage } =
-    useContext(BackgroundContext);
+  const {
+    uploadProfileBackground,
+    background,
+    uploadBackgroundImage,
+    setBackground,
+  } = useContext(BackgroundContext);
   const [newUser, setNewUser] = useState({});
   const [links, setLinks] = useState([]);
   const [openEdit, setOpenEdit] = useState(true);
@@ -31,6 +35,8 @@ export default function ProfilePage() {
     if (responseData.user) {
       setNewUser(responseData.user);
       setLinks(responseData.showlink);
+      setBackground(responseData.background_url);
+      setProfileImg(responseData.avatar_url);
     }
     if (responseData.message) {
       navigate("soon");
