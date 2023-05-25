@@ -355,14 +355,14 @@ export default function Dashboard() {
                       }}
                       id="picInput"
                       type="file"
-                      accept="image/png, image/jpg"
+                      accept="image/*"
                       className="form-control my-2 "
                       name="avatar"
                     />
                     <label htmlFor="background">Background: </label>
                     <input
                       type="file"
-                      accept="image/png, image/jpg"
+                      accept="image/*"
                       className="form-control my-2"
                       name="background"
                     />
