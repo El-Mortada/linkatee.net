@@ -40,6 +40,16 @@
 .miniPic img {
   transform: translateY(5px);
 }
+
+.shareContainer {
+  background-color: rgba(0, 0, 0, 0.85);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+}
 .profileContainer {
   height: 100vh;
   background-color: #f1f1f1;
@@ -90,6 +100,23 @@
   width: 32px;
   height: 32px;
   margin-left: 15px;
+  cursor: pointer;
+}
+.shareBox {
+  background-color: white;
+  width: 300px;
+  height: 300px;
+  z-index: 5;
+}
+
+.shareImg {
+  border: none;
+  background-color: transparent;
+  width: 20%;
+}
+.closeBtn {
+  top: 10px;
+  right: 10px;
   cursor: pointer;
 }
 .socialIcons .facebook {
@@ -230,6 +257,12 @@
   z-index: 99999;
   transition: all 0.15s ease-in;
 }
+
+.profileLink div {
+  width: 40px;
+  height: 40px;
+}
+
 .profileText {
   padding: 0px;
   margin: 0px;
@@ -242,30 +275,7 @@
   transform: translateY(50%);
   margin-left: 5px;
 }
-.formUpdate {
-  position: absolute;
-  min-width: 380px;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.61);
-  z-index: 999999999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.innerForm {
-  background-color: white;
-  overflow: auto;
-  width: 35%;
-  min-width: 300px;
-  min-height: 75%;
-  max-height: 650px;
-  padding-bottom: 30px;
-  scroll-behavior: smooth;
-  border-radius: 25px 25px 25px 25px;
-}
+
 .buttonInvisible svg {
   fill: white;
 }

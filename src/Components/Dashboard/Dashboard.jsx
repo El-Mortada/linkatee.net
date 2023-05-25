@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import styles from "../Dashboard/Dashboard.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { LinksContext } from "../../Context/LinksContext";
@@ -8,25 +8,109 @@ import image from "../../Assets/Images/Linkatee Final-01.png";
 import { BackgroundContext } from "../../Context/BackgroundContext";
 import { ImageContext } from "../../Context/ImageContext";
 import logo from "../../Assets/Images/Linkatee Final-02.png";
+import facebook from "../../Assets/Images/facebook.png";
+import twitter from "../../Assets/Images/twitter.png";
+import instagram from "../../Assets/Images/instagram.png";
+import whatsapp from "../../Assets/Images/whatsapp.png";
+import {
+  FacebookShareButton,
+  FacebookIcon,
+  WhatsappIcon,
+  WhatsappShareButton,
+  TwitterShareButton,
+  TwitterIcon,
+  InstapaperShareButton,
+  InstapaperIcon,
+} from "react-share";
 
 export default function Dashboard() {
   const { linksContainer, showLink, setLinksContainer, user } =
     useContext(LinksContext);
   let navigate = useNavigate();
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(true);
+  const [toggleShare, setToggleShare] = useState(false);
+  const [newUser, setNewUser] = useState({});
+  const [error, setError] = useState();
+  const [showEdit, setShowEdit] = useState(false);
   const [updateModal, setUpdateModal] = useState(false);
   const [linkId, setLinkId] = useState(null);
   const [opened, setOpened] = useState(false);
   const token = localStorage.getItem("token");
   const [title, setTitle] = useState();
   const [linkAd, setLinkAd] = useState();
-  const { background, uploadBackgroundImage } = useContext(BackgroundContext);
-  const { profileImg, getPic, setProfileImg } = useContext(ImageContext);
+  const { background, uploadBackgroundImage, uploadProfileBackground } =
+    useContext(BackgroundContext);
+  const {
+    profileImg,
+    getPic,
+    setProfileImg,
+    uploadProfileImage,
+    updateProfileImage,
+  } = useContext(ImageContext);
+  const [socialIcon, setSocialIcon] = useState();
+  const titleRef = useRef();
+  const linkRef = useRef();
+  const addLinkRef = useRef();
+  const [linkCopy, setLinkCopy] = useState(false);
+  const [showShare, setShowShare] = useState(false);
 
-  async function addLink(e) {
-    e.preventDefault();
+  const showMessage = () => {
+    setTimeout(() => {
+      setLinkCopy(true);
+    }, 100);
 
+    clearTimeout(setLinkCopy(false));
+
+    setTimeout(() => {
+      setLinkCopy(false);
+    }, 2000);
+
+    clearTimeout(setLinkCopy(false));
+  };
+
+  const setIcon = () => {
+    const socialRef = addLinkRef.current.value;
+    if (socialRef.includes("facebook")) {
+      setSocialIcon("fab fa-facebook");
+    } else if (socialRef.includes("twitter")) {
+      setSocialIcon("fab fa-twitter");
+    } else if (socialRef.includes("instagram")) {
+      setSocialIcon("fab fa-instagram");
+    } else if (socialRef.includes("tiktok")) {
+      setSocialIcon("fab fa-tiktok");
+    } else if (socialRef.includes("github")) {
+      setSocialIcon("fa-brands fa-github");
+    } else {
+      setSocialIcon("fa-solid fa-globe");
+    }
+  };
+
+  const copyLink = () => {
+    const userLink = document.getElementById("userLink").value;
+    navigator.clipboard.writeText(userLink);
+  };
+
+  const updateUserData = async (event, token) => {
+    event.preventDefault();
+    const formData = new FormData(document.querySelector(".updateForm"));
+    let response = await fetch(`https://backend.linkatee.com/api/userupdate`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: "Bearer" + token,
+      },
+      method: "post",
+      body: formData,
+      redirect: "follow",
+    });
+    const responseData = await response.json();
+    console.log(responseData);
+    setNewUser(responseData.user);
+  };
+
+  async function addLink(event) {
+    event.preventDefault();
     const form = new FormData(document.querySelector(".linkFormData"));
+    form.append("icon", socialIcon);
     form.append("order", "1");
     form.append("is_active", "1");
     const response = await fetch(`https://backend.linkatee.com/api/link`, {
@@ -39,11 +123,36 @@ export default function Dashboard() {
     });
     const responseData = await response.json();
     console.log(responseData);
+    if (
+      responseData.message == "Validation error" &&
+      responseData.errors.link
+    ) {
+      setError(
+        "*" + responseData.errors.link[0] + "and must start with https://"
+      );
+    } else if (
+      responseData.message == "Validation error" &&
+      responseData.errors.title
+    ) {
+      setError("*" + responseData.errors.title[0]);
+    } else if (responseData.message == "Link added successfully") {
+      setShowModal(!showModal);
+    }
     showLink(setLinksContainer, token);
   }
 
   async function updateLink(e) {
     e.preventDefault();
+
+    const titleInputRef = titleRef.current.value;
+    const linkInputRef = linkRef.current.value;
+
+    if (titleInputRef == "" || linkInputRef == "") {
+      setError("* please fill in the inputs required!");
+      console.log(titleInputRef);
+      console.log(linkInputRef);
+      return;
+    }
 
     const form = new FormData(document.querySelector(".updateformData"));
     console.log(form);
@@ -61,6 +170,11 @@ export default function Dashboard() {
     const responseData = await response.json();
     console.log(responseData);
     console.log(linkId);
+    if (responseData.errors) {
+      setError("*" + responseData.errors.link[0] + "must start with https://");
+    } else {
+      setUpdateModal(false);
+    }
     showLink(setLinksContainer, token);
   }
 
@@ -92,6 +206,196 @@ export default function Dashboard() {
 
   return (
     <>
+      {showShare ? (
+        <div
+          className={`${styles.shareContainer} d-flex justify-content-center align-items-center`}
+        >
+          <div className={`${styles.shareBox} rounded-1 shadow-sm px-3`}>
+            <div
+              onClick={() => {
+                setShowShare(false);
+              }}
+              className={`${styles.closeBtn} position-absolute`}
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </div>
+            <div className="w-100 inputBox d-flex flex-column  justify-content-center h-50">
+              <p>Share your profile link:</p>
+              <div className="d-flex">
+                <input
+                  className=" w-75 form-control"
+                  type="text"
+                  id="userLink"
+                  value={`https://www.linkatee.com/${user.username}`}
+                  readOnly
+                />
+                <button
+                  onClick={() => {
+                    copyLink();
+                    showMessage();
+                  }}
+                  className="btn btn-success"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+            {linkCopy ? (
+              <div>
+                <span>
+                  <i className="fa-solid fa-check text-success"></i>
+                </span>{" "}
+                <p className="text-success d-inline-block">Link copied </p>
+              </div>
+            ) : (
+              ""
+            )}
+
+            <hr className="my-0" />
+            <div className="mt-0  h-50 socialShare d-flex justify-content-center align-items-center">
+              <p>Share through social apps:</p>
+              <div>
+                {" "}
+                <button className={`${styles.whatsapp} ${styles.shareImg} p-2`}>
+                  {/* <img
+                    className="w-100 rounded-circle"
+                    src={whatsapp}
+                    alt="whatsapp"
+                  /> */}
+
+                  <WhatsappShareButton
+                    url={`https://www.linkatee.com/${user.username}`}
+                    quote={"Dummy text!"}
+                    hashtag="#Linkatee"
+                  >
+                    <WhatsappIcon size={32} round />
+                  </WhatsappShareButton>
+                </button>
+                <button className={`${styles.facebook} ${styles.shareImg} p-2`}>
+                  {" "}
+                  <FacebookShareButton
+                    url={`https://www.linkatee.com/${user.username}`}
+                    quote={"Dummy text!"}
+                    hashtag="#Linkatee"
+                  >
+                    <FacebookIcon size={32} round />
+                  </FacebookShareButton>
+                </button>
+                <button className={`${styles.twitter} ${styles.shareImg} p-2`}>
+                  {" "}
+                  <TwitterShareButton
+                    url={`https://www.linkatee.com/${user.username}`}
+                    quote={"Dummy text!"}
+                    hashtag="#Linkatee"
+                  >
+                    <TwitterIcon size={32} round />
+                  </TwitterShareButton>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        ""
+      )}
+      {showEdit ? (
+        <div className={`${styles.formUpdate}`}>
+          <div className={`${styles.innerForm} position-relative`}>
+            <button
+              onClick={() => {
+                setShowEdit(false);
+              }}
+              className="btn btn-close position-absolute end-0 me-3 mt-3"
+            ></button>
+            <div className="container">
+              <h1 className="m-4">Edit Profile</h1>
+              <div className="row d-flex justify-content-center px-5 text-center">
+                <div>
+                  <div
+                    className={`${styles.leftUpdate} d-flex flex-column justify-content-center align-items-center`}
+                  >
+                    <div
+                      className={`${styles.editProfilePic} mx-auto text-center position-relative mb-3`}
+                    >
+                      <img
+                        id="output"
+                        className={`w-100 h-100 rounded-circle ${styles.testPic}`}
+                        src={profileImg}
+                        alt=""
+                      />
+                    </div>
+                    <p>Upload your photo in the update form</p>
+                  </div>
+                </div>
+                <div>
+                  <h3>Personal Info</h3>
+
+                  <form className="ms-3 updateForm">
+                    <label htmlFor="name">First Name: </label>
+                    <input type="" className="form-control my-2" name="name" />
+                    <label htmlFor="jop_title">Job title: </label>
+                    <input
+                      type="text"
+                      className="form-control my-2"
+                      name="jop_title"
+                    />
+                    <label htmlFor="bio">Bio: </label>
+                    <input
+                      type="text"
+                      className="form-control my-2"
+                      name="bio"
+                    />
+                  </form>
+
+                  <form className="picForm mt-3">
+                    <label htmlFor="avatar">Profile photo: </label>
+                    <input
+                      onChange={(event) => {
+                        updateProfileImage(event, token);
+                      }}
+                      id="picInput"
+                      type="file"
+                      accept="image/png, image/jpg"
+                      className="form-control my-2 "
+                      name="avatar"
+                    />
+                    <label htmlFor="background">Background: </label>
+                    <input
+                      type="file"
+                      accept="image/png, image/jpg"
+                      className="form-control my-2"
+                      name="background"
+                    />
+                    <button
+                      onClick={(event) => {
+                        updateUserData(event, token);
+                        uploadProfileImage(event, token);
+                        uploadProfileBackground(token);
+                        setShowEdit(false);
+                      }}
+                      type="submit"
+                      className="btn btn-info mt-3 me-3 updatePicBtn"
+                    >
+                      Update
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowEdit(false);
+                      }}
+                      type="submit"
+                      className="btn btn-outline-danger mt-3"
+                    >
+                      Close
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        ""
+      )}
       <div className={styles.dashBody}>
         <div className="dropDown">
           {opened ? (
@@ -113,7 +417,13 @@ export default function Dashboard() {
                   </span>
                 </div>
               </Link>
-              <Link className={styles.links} to="/profile">
+              <Link
+                onClick={() => {
+                  setShowEdit(!showEdit);
+                }}
+                className={styles.links}
+                to="/dashboard"
+              >
                 <div className={`${styles.block} d-flex align-items-center`}>
                   <span className="p-2 ">
                     <span className="pe-2">
@@ -137,11 +447,11 @@ export default function Dashboard() {
                         ></path>
                       </svg>
                     </span>
-                    <span>Appearance</span>
+                    <span>Edit profile</span>
                   </span>
                 </div>
               </Link>
-              <Link className={styles.links} to="/soon">
+              {/* <Link className={styles.links} to="/soon">
                 {" "}
                 <div className={`${styles.block} d-flex align-items-center`}>
                   <span className="p-2 ">
@@ -167,6 +477,40 @@ export default function Dashboard() {
                       </svg>
                     </span>
                     <span>Analytics</span>
+                  </span>
+                </div>
+              </Link> */}
+              <Link
+                onClick={() => {
+                  setShowShare(!showShare);
+                }}
+                className={styles.links}
+              >
+                {" "}
+                <div className={`${styles.block} d-flex align-items-center`}>
+                  <span className="p-2 ">
+                    <span className="pe-2">
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 16 16"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className=" "
+                        role="img"
+                        aria-hidden="true"
+                        aria-labelledby=" "
+                      >
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M13 1C11.8954 1 11 1.89543 11 3C11 4.10457 11.8954 5 13 5C14.1046 5 15 4.10457 15 3C15 1.89543 14.1046 1 13 1ZM10 3C10 1.34315 11.3431 0 13 0C14.6569 0 16 1.34315 16 3C16 4.65685 14.6569 6 13 6C12.0052 6 11.1235 5.51578 10.5777 4.77018L5.87008 7.12398C5.95456 7.4011 6 7.69524 6 8C6 8.30476 5.95456 8.5989 5.87008 8.87602L10.5777 11.2298C11.1235 10.4842 12.0052 10 13 10C14.6569 10 16 11.3431 16 13C16 14.6569 14.6569 16 13 16C11.3431 16 10 14.6569 10 13C10 12.6952 10.0454 12.4011 10.1299 12.124L5.42233 9.77018C4.87654 10.5158 3.99482 11 3 11C1.34315 11 0 9.65685 0 8C0 6.34315 1.34315 5 3 5C3.99481 5 4.87653 5.48422 5.42233 6.22982L10.1299 3.87602C10.0454 3.5989 10 3.30476 10 3ZM3 6C1.89543 6 1 6.89543 1 8C1 9.10457 1.89543 10 3 10C4.10457 10 5 9.10457 5 8C5 6.89543 4.10457 6 3 6ZM11 13C11 11.8954 11.8954 11 13 11C14.1046 11 15 11.8954 15 13C15 14.1046 14.1046 15 13 15C11.8954 15 11 14.1046 11 13Z"
+                          fill="currentColor"
+                        ></path>
+                      </svg>
+                    </span>
+
+                    <span>Share</span>
                   </span>
                 </div>
               </Link>
@@ -202,6 +546,7 @@ export default function Dashboard() {
                     type="text"
                     name="title"
                     defaultValue={title}
+                    ref={titleRef}
                   />
                   <label className="fw-bold" htmlFor="link">
                     Link:{" "}
@@ -211,12 +556,13 @@ export default function Dashboard() {
                     type="text"
                     name="link"
                     defaultValue={linkAd}
+                    ref={linkRef}
                   />
                   <label className="fw-bold" htmlFor="background_color">
                     Background-color:{" "}
                   </label>
                   <input
-                    className="form-control my-2 w-25"
+                    className="form-control my-2 "
                     type="color"
                     name="background_color"
                   />
@@ -224,7 +570,7 @@ export default function Dashboard() {
                     Link-color:{" "}
                   </label>
                   <input
-                    className="form-control my-2 w-25"
+                    className="form-control my-2"
                     type="color"
                     name="text_color"
                   />
@@ -234,69 +580,8 @@ export default function Dashboard() {
                   >
                     Update link
                   </button>
-                </form>
-              </div>
-            </div>
-          ) : (
-            ""
-          )}
 
-          {showModal ? (
-            <div
-              className={`${styles.addLinkModal} d-flex justify-content-center align-items-center`}
-            >
-              <div
-                className={`${styles.addLinkFormContainer} position-relative w-75 bg-white rounded-2 p-4`}
-              >
-                <div
-                  onClick={function () {
-                    setShowModal(false);
-                  }}
-                  className={`${styles.closeBtnContainer} rounded-3 d-flex justify-content-center align-items-center`}
-                >
-                  <span className="me-2 mb-1">Close</span>
-                  <i className="fa-solid fa-xmark"></i>
-                </div>
-                <h3>Add link</h3>
-                <form className="linkFormData">
-                  <label className="fw-bold" htmlFor="title">
-                    Title:{" "}
-                  </label>
-                  <input
-                    className="form-control my-2"
-                    type="text"
-                    name="title"
-                  />
-                  <label className="fw-bold" htmlFor="link">
-                    Link:{" "}
-                  </label>
-                  <input
-                    className="form-control my-2"
-                    type="text"
-                    name="link"
-                  />
-                  {/* <label className="fw-bold" htmlFor="order">
-                    Order:{" "}
-                  </label>
-                  <input
-                    className="form-control my-2"
-                    type="text"
-                    name="order"
-                  />
-                  <label className="fw-bold" htmlFor="is_active">
-                    Active:{" "}
-                  </label>
-                  <input
-                    className="form-control my-2"
-                    type="text"
-                    name="is_active"
-                  /> */}
-                  <button
-                    onClick={addLink}
-                    className={`${styles.submitBtn} btn btn-primary mt-2`}
-                  >
-                    Add Link
-                  </button>
+                  <p className="text-danger">{error}</p>
                 </form>
               </div>
             </div>
@@ -355,7 +640,7 @@ export default function Dashboard() {
                       </span>
                     </div>
                   </Link>
-                  <Link className={styles.links} to="/soon">
+                  {/* <Link className={styles.links} to="/soon">
                     {" "}
                     <div
                       className={`${styles.block} d-flex align-items-center`}
@@ -385,8 +670,14 @@ export default function Dashboard() {
                         <span>Analytics</span>
                       </span>
                     </div>
-                  </Link>
-                  <Link className={`mt-2 p-0 ${styles.links}`} to="/profile">
+                  </Link> */}
+                  <Link
+                    onClick={() => {
+                      setShowEdit(!showEdit);
+                    }}
+                    className={`mt-2 p-0 ${styles.links}`}
+                    to="/dashboard"
+                  >
                     <div
                       className={`${styles.block} d-flex align-items-center`}
                     >
@@ -440,6 +731,9 @@ export default function Dashboard() {
                   </div>
                   <div className="d-flex justify-content-center align-items-center me-2 rightNavBigScrn"></div>
                   <button
+                    onClick={() => {
+                      setToggleShare(!toggleShare);
+                    }}
                     className={`rounded-pill ${styles.shareBtn} d-md-flex justify-content-center align-items-center`}
                   >
                     <span className="me-2 ">
@@ -502,12 +796,98 @@ export default function Dashboard() {
               </div>
             </div>
           </nav>
+          {toggleShare ? (
+            <div className={`${styles.shareBox} rounded-1 shadow-sm px-3`}>
+              <div className="w-100 inputBox d-flex flex-column  justify-content-center h-50">
+                <p>Share your profile link:</p>
+                <div className="d-flex">
+                  <input
+                    className=" w-75 form-control"
+                    type="text"
+                    id="userLink"
+                    value={`https://www.linkatee.com/${user.username}`}
+                    readOnly
+                  />
+                  <button
+                    onClick={() => {
+                      copyLink();
+                      showMessage();
+                    }}
+                    className="btn btn-success"
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+              {linkCopy ? (
+                <div>
+                  <span>
+                    <i className="fa-solid fa-check text-success"></i>
+                  </span>{" "}
+                  <p className="text-success d-inline-block">Link copied </p>
+                </div>
+              ) : (
+                ""
+              )}
+
+              <hr className="my-0" />
+              <div className="mt-0  h-50 socialShare d-flex justify-content-center align-items-center">
+                <p>Share through social apps:</p>
+                <div>
+                  {" "}
+                  <button
+                    className={`${styles.whatsapp} ${styles.shareImg} p-2`}
+                  >
+                    {/* <img
+                    className="w-100 rounded-circle"
+                    src={whatsapp}
+                    alt="whatsapp"
+                  /> */}
+
+                    <WhatsappShareButton
+                      url={`https://www.linkatee.com/${user.username}`}
+                      quote={"Dummy text!"}
+                      hashtag="#Linkatee"
+                    >
+                      <WhatsappIcon size={32} round />
+                    </WhatsappShareButton>
+                  </button>
+                  <button
+                    className={`${styles.facebook} ${styles.shareImg} p-2`}
+                  >
+                    {" "}
+                    <FacebookShareButton
+                      url={`https://www.linkatee.com/${user.username}`}
+                      quote={"Dummy text!"}
+                      hashtag="#Linkatee"
+                    >
+                      <FacebookIcon size={32} round />
+                    </FacebookShareButton>
+                  </button>
+                  <button
+                    className={`${styles.twitter} ${styles.shareImg} p-2`}
+                  >
+                    {" "}
+                    <TwitterShareButton
+                      url={`https://www.linkatee.com/${user.username}`}
+                      quote={"Dummy text!"}
+                      hashtag="#Linkatee"
+                    >
+                      <TwitterIcon size={32} round />
+                    </TwitterShareButton>
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
 
           <div className="container-fluid w-100">
             <div className="container-fluid ">
               <div className="row  h-100">
                 <div className={`col-md-7 ${styles.content} ${styles.grey}`}>
-                  <div
+                  {/* <div
                     className={`bg-white ${styles.navContainer} shadow-sm rounded-4 px-2 py-2 mb-5`}
                   >
                     <div className="d-flex justify-content-center align-items-center">
@@ -518,7 +898,7 @@ export default function Dashboard() {
                           className={`${styles.block} d-flex align-items-center`}
                         >
                           <span className="p-2 ">
-                            <span>Analytics</span>
+                            <span>Edit profile</span>
                             <span className="ms-3">
                               <svg
                                 className="mb-1 '' "
@@ -576,60 +956,85 @@ export default function Dashboard() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                   <div
                     className={`${styles.linkBox} w-100 d-flex justify-content-center align-items-center`}
                   >
                     <div className={`${styles.buttonContainer} w-75`}>
-                      <button
-                        onClick={function () {
-                          setShowModal(true);
-                        }}
-                        className={`w-100 d-block  rounded-pill ${styles.addLink}`}
+                      <div
+                        className={`w-100 d-flex flex-column justify-content-start  align-items-center ${
+                          showModal
+                            ? `${styles.addLinkBtn}`
+                            : ` ${styles.addLinkShow}`
+                        }  `}
                       >
-                        <span>
-                          <svg
-                            className="mb-1 me-1 '' "
-                            width="16"
-                            height="16"
-                            viewBox="0 0 16 16"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            role="img"
-                            aria-hidden="true"
-                            aria-labelledby=" "
-                          >
-                            <path
-                              fillRule="evenodd"
-                              clipRule="evenodd"
-                              d="M7 8V15H8V8H15V7H8V0H7V7H0V8H7Z"
-                              fill="currentColor"
-                            ></path>
-                          </svg>
-                        </span>
-                        Add link
-                      </button>
+                        <div
+                          onClick={function () {
+                            setShowModal(!showModal);
+                            setError("");
+                          }}
+                          className={`${styles.add} w-100  d-flex justify-content-center`}
+                        >
+                          <span>
+                            <svg
+                              className="mb-1 me-1 '' "
+                              width="16"
+                              height="16"
+                              viewBox="0 0 16 16"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              role="img"
+                              aria-hidden="true"
+                              aria-labelledby=" "
+                            >
+                              <path
+                                fillRule="evenodd"
+                                clipRule="evenodd"
+                                d="M7 8V15H8V8H15V7H8V0H7V7H0V8H7Z"
+                                fill="currentColor"
+                              ></path>
+                            </svg>
+                            <span>Add link</span>
+                          </span>
+                        </div>
 
-                      <button className="d-block mt-4 ms-1 px-3 py-2 rounded-pill">
-                        <span className="me-2">
-                          <svg
-                            className="mb-1 mr-xs"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 16 16"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              clipRule="evenodd"
-                              d="M0.5 -0.000244141H0V0.999755L0.5 0.999756L15.4999 0.999775L15.9999 0.999776L15.9999 -0.000224382L15.4999 -0.000225008L0.5 -0.000244141ZM0.500074 3.99976L7.37309e-05 4.49975L0 15.4998L0.5 15.9998H15.5L16 15.4998V4.49977L15.5 3.99977L0.500074 3.99976ZM1 14.9998L1.00007 4.99976L15 4.99977V14.9998H1Z"
-                              fill="black"
-                            ></path>
-                          </svg>
-                        </span>
-                        Add header
-                      </button>
+                        <div
+                          className={`${styles.addLinkFormContainer} position-relative w-75  rounded-2 p-4 mt-3`}
+                        >
+                          <h3>Add link</h3>
+                          <form className="linkFormData">
+                            <label className="fw-bold" htmlFor="title">
+                              Title:{" "}
+                            </label>
+                            <input
+                              className="form-control my-2"
+                              type="text"
+                              name="title"
+                              ref={titleRef}
+                            />
+                            <label className="fw-bold" htmlFor="link">
+                              Link:{" "}
+                            </label>
+                            <input
+                              onChange={setIcon}
+                              className="form-control my-2"
+                              type="text"
+                              name="link"
+                              ref={addLinkRef}
+                            />
+                            <button
+                              onClick={function (event) {
+                                addLink(event);
+                              }}
+                              className={` px-3 btn btn-primary mt-2`}
+                            >
+                              Add Link
+                            </button>
+
+                            <p className="text-danger">{`${error}`}</p>
+                          </form>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="d-flex justify-content-center">
@@ -833,6 +1238,7 @@ export default function Dashboard() {
                                   setTitle(link.link.title);
                                   setUpdateModal(true);
                                   setLinkId(link.link_id);
+                                  setError("");
                                 }}
                               >
                                 Edit
@@ -899,6 +1305,7 @@ export default function Dashboard() {
                             <span className="fw-bolder">@</span>
                             {user.username}
                           </div>
+
                           <div className={`${styles.linksContainer}`}>
                             {linksContainer.map((link, index) => (
                               <div key={index} className={styles.hvrPop}>
@@ -921,7 +1328,7 @@ export default function Dashboard() {
                                   <div
                                     className={`${styles.picContainer} d-flex justify-content-center align-items-center`}
                                   >
-                                    <i className="fa-solid fa-store"></i>
+                                    {<i className={`${link.link.icon}`}></i>}
                                   </div>
                                   <p
                                     style={{

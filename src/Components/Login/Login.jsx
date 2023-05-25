@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import styles from "../Login/Login.module.css";
 import image from "../../Assets/Images/Linkatee Final-02.png";
@@ -11,8 +11,34 @@ export default function Login() {
   const [checkPassValid, setCheckPassValid] = useState(true);
   const [checkUserAndPass, setCheckUserAndPass] = useState(true);
   const [error, setError] = useState();
+  const [userList, setUserList] = useState([]);
+  const [noUser, setNoUser] = useState(false);
+  const [wrongPass, setWrongPass] = useState(false);
 
   const navigate = useNavigate();
+  const userNameRef = useRef();
+
+  const checkUserIsFound = async () => {
+    const response = await fetch(
+      `https://backend.linkatee.com/api/show-all-users`
+    );
+    const responseData = await response.json();
+    console.log(responseData);
+    setUserList(responseData.users);
+  };
+
+  const searchUserName = () => {
+    const userName = userNameRef.current.value;
+    console.log(userList);
+    console.log(userName);
+
+    const userFound = userList.find((user) => userName == user.username);
+    if (!userFound) {
+      setNoUser(true);
+    } else {
+      setNoUser(false);
+    }
+  };
 
   const checkValidInput = (e, setCheck) => {
     e.target.value.length ? setCheck(true) : setCheck(false);
@@ -28,10 +54,11 @@ export default function Login() {
 
     let responseData = await response.json();
     console.log(responseData);
-
-    if (responseData.message != "login sucessfully") {
+    if (noUser == true) {
+      return;
+    } else if (responseData.message != "login sucessfully" && noUser == false) {
       setCheckUserAndPass(false);
-      setError(responseData.message);
+      setError("* Invalid password");
     }
 
     localStorage.setItem("token", responseData.access_token);
@@ -39,6 +66,10 @@ export default function Login() {
       navigate("/dashboard");
     }
   };
+
+  useEffect(() => {
+    checkUserIsFound();
+  }, []);
   return (
     <>
       <div className={`w-100 h-100  ${styles.formBody}`}>
@@ -50,6 +81,11 @@ export default function Login() {
               <div className={`${styles.formContent} `}>
                 <div className={styles.formItems}>
                   <img src={image} alt="" />
+                  <p className="ms-2 fw-bold">
+                    {" "}
+                    One link in bio, <br /> endless possibilities to explore
+                    everything about you.
+                  </p>
                   <p className="ms-2">Fill in the data below.</p>
                   <form
                     onSubmit={registerUser}
@@ -60,14 +96,23 @@ export default function Login() {
                         onChange={(e) => {
                           checkValidInput(e, setCheckUserValid);
                         }}
+                        onBlur={searchUserName}
                         className="userName form-control"
                         type="text"
                         name="username"
                         placeholder="User Name"
+                        ref={userNameRef}
                       />
                       {!checkUserValid ? (
                         <div className={styles.invalidFeedback}>
                           Username field cannot be blank!
+                        </div>
+                      ) : (
+                        ""
+                      )}
+                      {noUser ? (
+                        <div className={styles.invalidFeedback}>
+                          * Username not found!
                         </div>
                       ) : (
                         ""
@@ -94,7 +139,7 @@ export default function Login() {
                     </div>
                     {!checkUserAndPass ? (
                       <div className={`${styles.invalidFeedback} mt-3`}>
-                        *{error}
+                        {error}
                       </div>
                     ) : (
                       ""
@@ -119,7 +164,9 @@ export default function Login() {
               </div>
             </div>
             <div className={`${styles.socialBackground} col-md-6`}>
-              <div className={`${styles.dimmer}`}></div>
+              <div className={`${styles.dimmer}`}>
+                <div className="w-100 h-100 d-flex  text-white align-items-center"></div>
+              </div>
             </div>
           </div>
         </div>
