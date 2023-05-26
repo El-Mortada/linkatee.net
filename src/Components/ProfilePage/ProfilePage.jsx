@@ -134,7 +134,7 @@ export default function ProfilePage() {
                   className=" w-75 form-control"
                   type="text"
                   id="userLink"
-                  value={`https://www.linkatee.com/${user.username}`}
+                  value={`https://www.linkatee.com/${params.username}`}
                   readOnly
                 />
                 <button
@@ -172,7 +172,7 @@ export default function ProfilePage() {
                   /> */}
 
                   <WhatsappShareButton
-                    url={`https://www.linkatee.com/${user.username}`}
+                    url={`https://www.linkatee.com/${params.username}`}
                     quote={"Dummy text!"}
                     hashtag="#Linkatee"
                   >
@@ -182,7 +182,7 @@ export default function ProfilePage() {
                 <button className={`${styles.facebook} ${styles.shareImg} p-2`}>
                   {" "}
                   <FacebookShareButton
-                    url={`https://www.linkatee.com/${user.username}`}
+                    url={`https://www.linkatee.com/${params.username}`}
                     quote={"Dummy text!"}
                     hashtag="#Linkatee"
                   >
@@ -192,7 +192,7 @@ export default function ProfilePage() {
                 <button className={`${styles.twitter} ${styles.shareImg} p-2`}>
                   {" "}
                   <TwitterShareButton
-                    url={`https://www.linkatee.com/${user.username}`}
+                    url={`https://www.linkatee.com/${params.username}`}
                     quote={"Dummy text!"}
                     hashtag="#Linkatee"
                   >
@@ -448,7 +448,7 @@ export default function ProfilePage() {
                           >
                             {link.link.title}
                           </p>
-                          <div
+                          <button
                           // onClick={() => {
                           //   setShowShareLink(!showShareLink);
                           // }}
@@ -474,7 +474,7 @@ export default function ProfilePage() {
                                 fill="currentColor"
                               ></path>
                             </svg> */}
-                          </div>
+                          </button>
                         </a>
                       </div>
                     </div>
